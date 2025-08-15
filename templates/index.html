@@ -3,207 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viral Clip Extractor - AI Trading Content Analysis</title>
+    <title>Viral Clip Extractor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="header__title">
-                    <i class="fas fa-rocket"></i> Viral Clip Extractor
-                </h1>
-                <p class="header__subtitle">AI-Powered Trading Content Analysis with Hugging Face</p>
-                <div class="status-indicator" id="statusIndicator">
-                    <span class="status-dot"></span>
-                    <span class="status-text">Ready</span>
-                </div>
+    <div class="container">
+        <header class="header">
+            <h1>🔥 Viral Clip Extractor</h1>
+            <p>Extract the most engaging clips from your videos using AI</p>
+            <div id="statusIndicator" class="status-indicator">
+                <div class="status-dot"></div>
+                <span class="status-text">Ready</span>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content -->
-    <main class="main">
-        <div class="container">
+        <main class="main-content">
             <!-- Input Section -->
-            <section class="input-section card">
-                <div class="card__body">
-                    <h2><i class="fab fa-youtube"></i> Enter YouTube Video URL</h2>
+            <section class="input-section">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="url">📺 YouTube URL</button>
+                    <button class="tab-btn" data-tab="srt">📄 Upload SRT File</button>
+                </div>
+
+                <!-- YouTube URL Tab -->
+                <div id="url-tab" class="tab-content active">
                     <div class="url-input-container">
-                        <input type="url" 
-                               id="videoUrl" 
-                               class="form-control url-input" 
-                               placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
-                               autocomplete="off">
-                        <div class="url-validation" id="urlValidation"></div>
-                    </div>
-
-                    <!-- Platform Selection -->
-                    <div class="platform-section">
-                        <h3>Select Target Platform</h3>
-                        <div class="platform-grid">
-                            <button class="platform-btn active" data-platform="YouTube Shorts">
-                                <i class="fab fa-youtube"></i>
-                                <span class="platform-name">YouTube Shorts</span>
-                                <span class="platform-specs">15-60s optimal</span>
-                            </button>
-                            <button class="platform-btn" data-platform="Instagram Reels">
-                                <i class="fab fa-instagram"></i>
-                                <span class="platform-name">Instagram Reels</span>
-                                <span class="platform-specs">15-30s optimal</span>
-                            </button>
-                            <button class="platform-btn" data-platform="TikTok">
-                                <i class="fab fa-tiktok"></i>
-                                <span class="platform-name">TikTok</span>
-                                <span class="platform-specs">15-60s optimal</span>
-                            </button>
+                        <div class="input-group">
+                            <input 
+                                type="url" 
+                                id="videoUrl" 
+                                placeholder="Paste YouTube URL here..."
+                                class="url-input"
+                            >
+                            <div id="urlValidation" class="url-validation"></div>
                         </div>
-                    </div>
+                        
+                        <div class="platform-selection">
+                            <label>Target Platform:</label>
+                            <div class="platform-buttons">
+                                <button class="platform-btn active" data-platform="YouTube Shorts">YouTube Shorts</button>
+                                <button class="platform-btn" data-platform="TikTok">TikTok</button>
+                                <button class="platform-btn" data-platform="Instagram Reels">Instagram Reels</button>
+                            </div>
+                        </div>
 
-                    <!-- Analyze Button -->
-                    <button id="analyzeBtn" class="btn btn-primary btn-large" disabled>
-                        <i class="fas fa-brain"></i>
-                        <span>Analyze Video with AI</span>
-                    </button>
+                        <button id="analyzeBtn" class="analyze-btn" disabled>
+                            <i class="fas fa-play"></i>
+                            Analyze Video
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SRT Upload Tab -->
+                <div id="srt-tab" class="tab-content">
+                    <div class="srt-upload-container">
+                        <div class="upload-section">
+                            <h3>📄 Upload SRT File (Required)</h3>
+                            <div class="file-upload-area" id="srtUploadArea">
+                                <div class="upload-icon">📄</div>
+                                <p>Drag and drop your .srt file here or click to browse</p>
+                                <input type="file" id="srtFile" accept=".srt" style="display: none;">
+                                <button class="browse-btn" onclick="document.getElementById('srtFile').click()">
+                                    Browse SRT File
+                                </button>
+                                <div id="srtFileName" class="file-name"></div>
+                            </div>
+                        </div>
+
+                        <div class="upload-section">
+                            <h3>🎬 YouTube URL (Optional - for downloads)</h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                                Add the YouTube URL to enable direct video clip downloads. If not provided, you'll get FFmpeg commands instead.
+                            </p>
+                            <div class="input-group">
+                                <input 
+                                    type="url" 
+                                    id="srtVideoUrl" 
+                                    placeholder="Paste YouTube URL here (optional)..."
+                                    class="url-input"
+                                    style="width: 100%;"
+                                >
+                                <div id="srtUrlValidation" class="url-validation"></div>
+                            </div>
+                        </div>
+
+                        <button id="analyzeSrtBtn" class="analyze-btn" disabled>
+                            <i class="fas fa-upload"></i>
+                            Analyze SRT File
+                        </button>
+                    </div>
                 </div>
             </section>
 
             <!-- Progress Section -->
-            <section class="progress-section hidden" id="progressSection">
-                <div class="card">
-                    <div class="card__body">
-                        <h3><i class="fas fa-cogs"></i> AI Analysis in Progress</h3>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="progressFill"></div>
-                            </div>
-                            <div class="progress-steps">
-                                <div class="step active" id="step1">
-                                    <i class="fas fa-download"></i>
-                                    <span>Fetching Transcript</span>
-                                </div>
-                                <div class="step" id="step2">
-                                    <i class="fas fa-brain"></i>
-                                    <span>AI Analysis</span>
-                                </div>
-                                <div class="step" id="step3">
-                                    <i class="fas fa-search"></i>
-                                    <span>Identifying Clips</span>
-                                </div>
-                                <div class="step" id="step4">
-                                    <i class="fas fa-star"></i>
-                                    <span>Scoring Virality</span>
-                                </div>
-                            </div>
-                            <div class="progress-status" id="progressStatus">
-                                Connecting to YouTube API...
-                            </div>
+            <section id="progressSection" class="progress-section hidden">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <h3>🔄 Analyzing Content...</h3>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    
+                    <div id="progressStatus" class="progress-status">Initializing analysis...</div>
+                    
+                    <div class="progress-steps">
+                        <div class="step active">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Extract Content</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-label">AI Analysis</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Score Clips</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Generate Results</div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Results Section -->
-            <section class="results-section hidden" id="resultsSection">
-                <!-- Summary Stats -->
-                <div class="summary-card card">
-                    <div class="card__body">
-                        <h3><i class="fas fa-chart-line"></i> Analysis Summary</h3>
-                        <div class="stats-grid">
-                            <div class="stat">
-                                <div class="stat-value" id="totalClips">0</div>
-                                <div class="stat-label">Clips Found</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value" id="avgScore">0.0</div>
-                                <div class="stat-label">Avg Score</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value" id="topCategory">-</div>
-                                <div class="stat-label">Top Category</div>
-                            </div>
+            <section id="resultsSection" class="results-section hidden">
+                <div class="results-header">
+                    <h2>🎬 Viral Clips Found</h2>
+                    <div class="results-summary">
+                        <div class="summary-card">
+                            <div class="summary-number" id="totalClips">0</div>
+                            <div class="summary-label">Total Clips</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number" id="avgScore">0.0</div>
+                            <div class="summary-label">Avg Score</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number" id="topCategory">-</div>
+                            <div class="summary-label">Top Category</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Filter and Sort Controls -->
-                <div class="controls-card card">
-                    <div class="card__body">
-                        <div class="controls-grid">
-                            <div class="control-group">
-                                <label>Sort by:</label>
-                                <select id="sortBy" class="form-control">
-                                    <option value="score">Virality Score</option>
-                                    <option value="duration">Duration</option>
-                                    <option value="category">Category</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label>Filter by Category:</label>
-                                <select id="filterCategory" class="form-control">
-                                    <option value="all">All Categories</option>
-                                    <option value="Trading Knowledge">Trading Knowledge</option>
-                                    <option value="Trading Mindset">Trading Mindset</option>
-                                    <option value="Trading Psychology">Trading Psychology</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label>Min Score:</label>
-                                <input type="range" id="minScore" min="0" max="100" value="0" class="range-slider">
-                                <span id="minScoreValue">0</span>
-                            </div>
-                        </div>
+                <div class="filter-controls">
+                    <select id="sortBy">
+                        <option value="score">Sort by Score</option>
+                        <option value="duration">Sort by Duration</option>
+                        <option value="category">Sort by Category</option>
+                    </select>
+                    
+                    <select id="filterCategory">
+                        <option value="all">All Categories</option>
+                        <option value="Trading Knowledge">Trading Knowledge</option>
+                        <option value="Trading Psychology">Trading Psychology</option>
+                        <option value="Risk Management">Risk Management</option>
+                        <option value="General Content">General Content</option>
+                    </select>
+                    
+                    <div class="score-filter">
+                        <label>Min Score: <span id="minScoreValue">0</span></label>
+                        <input type="range" id="minScore" min="0" max="100" value="0">
                     </div>
                 </div>
 
-                <!-- Top 5 Highlights -->
-                <div class="highlights-section" id="highlightsSection">
-                    <h3><i class="fas fa-trophy"></i> Top 5 Viral Clips</h3>
-                    <div class="highlights-grid" id="highlightsGrid">
-                        <!-- Top clips will be populated here -->
-                    </div>
-                </div>
-
-                <!-- All Clips -->
-                <div class="clips-section">
-                    <h3><i class="fas fa-video"></i> All Identified Clips</h3>
-                    <div class="clips-container" id="clipsContainer">
-                        <!-- Clips will be populated here -->
-                    </div>
-                </div>
+                <div id="highlightsGrid" class="highlights-grid"></div>
+                <div id="clipsContainer" class="clips-container"></div>
             </section>
 
             <!-- Error Section -->
-            <section class="error-section hidden" id="errorSection">
-                <div class="card error-card">
-                    <div class="card__body">
-                        <div class="error-content">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <h3>Analysis Failed</h3>
-                            <p id="errorMessage">An unexpected error occurred. Please try again.</p>
-                            <button class="btn btn-secondary" id="retryBtn">
-                                <i class="fas fa-redo"></i> Try Again
-                            </button>
-                        </div>
-                    </div>
+            <section id="errorSection" class="error-section hidden">
+                <div class="error-container">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Analysis Failed</h3>
+                    <p id="errorMessage">Something went wrong during analysis.</p>
+                    <button id="retryBtn" class="retry-btn">Try Again</button>
                 </div>
             </section>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Viral Clip Extractor. Powered by Hugging Face AI & YouTube API.</p>
-        </div>
-    </footer>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay hidden" id="loadingOverlay">
-        <div class="spinner"></div>
-        <p>Processing with AI...</p>
+        </main>
     </div>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
